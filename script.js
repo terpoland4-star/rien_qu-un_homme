@@ -4,8 +4,6 @@
 // Version 2.0 - Produit vendable
 // ============================================
 
-// Configuration de l'album
-// ⚠️ CHEMINS CORRIGÉS selon vos fichiers GitHub
 const ALBUM_CONFIG = {
     name: "Les dunes de ma vie",
     artist: "Hamadine",
@@ -16,7 +14,7 @@ const ALBUM_CONFIG = {
             id: 1,
             title: "Debout encore",
             artist: "Hamadine",
-            file: "musique/Debout encore – Hamadine.mp3",  // ✅ Nom exact avec tiret et espace
+            file: "musique/" + encodeURIComponent('"Debout encore – Hamadine".mp3'),
             duration: "3:48",
             durationSeconds: 0,
             description: "Un hymne à la résilience"
@@ -25,7 +23,7 @@ const ALBUM_CONFIG = {
             id: 2,
             title: "Le Chemin d'Hamadine",
             artist: "Hamadine",
-            file: "musique/Le Chemin d’Hamadine.mp3",  // ✅ Apostrophe courbe
+            file: "musique/Le Chemin d’Hamadine.mp3",
             duration: "3:14",
             durationSeconds: 0,
             description: "Le parcours d'un homme"
@@ -34,7 +32,7 @@ const ALBUM_CONFIG = {
             id: 3,
             title: "Rien qu'un homme",
             artist: "Hamadine",
-            file: "musique/Rien qu’un homme.mp3",  // ✅ Apostrophe courbe
+            file: "musique/Rien qu’un homme.mp3",
             duration: "3:10",
             durationSeconds: 0,
             description: "Titre éponyme de l'album"
