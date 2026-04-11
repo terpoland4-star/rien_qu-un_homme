@@ -3,108 +3,220 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Hamadine - Les dunes de ma vie | Rien qu'un homme</title>
+    <meta name="description" content="Lecteur audio premium - Album Les dunes de ma vie par Hamadine">
+    <meta name="author" content="Hamadine">
+    <title>Hamadine · Les dunes de ma vie · Album officiel</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
-        <div class="player-card">
-            <!-- En-tête de l'album -->
-            <div class="album-header">
-                <div class="album-art-wrapper">
-                    <img id="albumArt" src="musique/cover.jpg" alt="Hamadine - Les dunes de ma vie" class="album-art" onerror="this.src='https://via.placeholder.com/300x300/1a1a2e/c4d2ff?text=Hamadine'">
-                    <div class="vinyl-effect"></div>
-                </div>
-                <div class="album-info">
-                    <h1 class="album-title">Les dunes de ma vie</h1>
-                    <p class="album-artist">Hamadine</p>
-                    <div class="album-subtitle">"Rien qu'un homme"</div>
-                    <div class="song-count" id="songCount">Chargement...</div>
-                </div>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <div class="logo-icon">🎵</div>
+                <span class="logo-text">Hamadine</span>
             </div>
+            
+            <nav class="main-nav">
+                <a href="#" class="nav-link active">
+                    <span class="nav-icon">📀</span>
+                    <span>Lecteur</span>
+                </a>
+                <a href="#" class="nav-link">
+                    <span class="nav-icon">📜</span>
+                    <span>Paroles</span>
+                </a>
+                <a href="#" class="nav-link">
+                    <span class="nav-icon">🎧</span>
+                    <span>À propos</span>
+                </a>
+            </nav>
 
-            <!-- Lecteur principal -->
-            <div class="player-controls">
-                <div class="song-info">
-                    <h2 id="currentSongTitle" class="current-song">Hamadine sur les dunes</h2>
-                    <p id="currentSongArtist" class="current-artist">Hamadine</p>
-                </div>
-
-                <div class="progress-section">
-                    <div class="progress-container" id="progressContainer">
-                        <div class="progress-bar" id="progressBar"></div>
-                    </div>
-                    <div class="time-info">
-                        <span id="currentTime">0:00</span>
-                        <span id="duration">0:00</span>
-                    </div>
-                </div>
-
-                <div class="buttons">
-                    <button id="shuffleBtn" class="control-btn" title="Lecture aléatoire">🔀</button>
-                    <button id="prevBtn" class="control-btn" title="Titre précédent">⏮</button>
-                    <button id="playPauseBtn" class="control-btn play-btn" title="Lecture/Pause">▶</button>
-                    <button id="nextBtn" class="control-btn" title="Titre suivant">⏭</button>
-                    <button id="repeatBtn" class="control-btn" title="Répéter">🔁</button>
-                </div>
-
-                <div class="volume-section">
-                    <span class="volume-icon">🔊</span>
-                    <input type="range" id="volumeSlider" class="volume-slider" min="0" max="1" step="0.01" value="0.7">
-                </div>
-            </div>
-
-            <!-- Paroles synchronisées -->
-            <div class="lyrics-section">
-                <div class="lyrics-header">
-                    <h3>📜 Paroles synchronisées</h3>
-                    <button id="toggleLyricsMode" class="mode-btn">🎬 Mode plein écran</button>
-                </div>
-                <div class="lyrics-container" id="lyricsContainer">
-                    <div class="lyrics-content" id="lyricsContent">
-                        <p class="lyrics-placeholder">Chargement des paroles...</p>
+            <div class="sidebar-footer">
+                <div class="now-playing-mini">
+                    <div class="mini-album-art"></div>
+                    <div class="mini-info">
+                        <p class="mini-title">Rien qu'un homme</p>
+                        <p class="mini-artist">Hamadine</p>
                     </div>
                 </div>
             </div>
+        </aside>
 
-            <!-- Playlist -->
-            <div class="playlist-section">
-                <div class="playlist-header">
-                    <h3>🎵 Liste des titres</h3>
-                    <div class="playlist-controls">
-                        <span class="playlist-count" id="playlistCount"></span>
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header Album -->
+            <div class="album-hero">
+                <div class="album-art-large">
+                    <img id="albumArt" src="musique/cover.jpg" alt="Les dunes de ma vie" onerror="this.src='https://placehold.co/400x400/1a1a2e/e8c9a0?text=Hamadine'">
+                    <div class="album-glow"></div>
+                </div>
+                <div class="album-details">
+                    <span class="album-type">Album</span>
+                    <h1 class="album-title-large">Les dunes de ma vie</h1>
+                    <p class="album-artist-large">Hamadine</p>
+                    <div class="album-meta">
+                        <span class="meta-item">🎤 3 titres</span>
+                        <span class="meta-item">📅 2024</span>
+                        <span class="meta-item">⏱️ ~12 min</span>
+                    </div>
+                    <div class="album-actions">
+                        <button id="playAllBtn" class="btn-primary">
+                            <span>▶</span> Tout écouter
+                        </button>
+                        <button id="shufflePlayBtn" class="btn-secondary">
+                            🔀 Aléatoire
+                        </button>
                     </div>
                 </div>
-                <div class="playlist-container" id="playlistContainer">
+            </div>
+
+            <!-- Player Bar -->
+            <div class="player-bar">
+                <div class="player-controls">
+                    <button id="shuffleBtn" class="player-btn" title="Mode aléatoire">🔀</button>
+                    <button id="prevBtn" class="player-btn player-btn-large">⏮</button>
+                    <button id="playPauseBtn" class="player-btn player-btn-play">▶</button>
+                    <button id="nextBtn" class="player-btn player-btn-large">⏭</button>
+                    <button id="repeatBtn" class="player-btn" title="Répéter">🔁</button>
+                </div>
+
+                <div class="player-progress">
+                    <span id="currentTime" class="time-current">0:00</span>
+                    <div class="progress-wrapper">
+                        <div class="progress-bar-bg" id="progressContainer">
+                            <div class="progress-bar-fill" id="progressBar"></div>
+                            <div class="progress-handle" id="progressHandle"></div>
+                        </div>
+                    </div>
+                    <span id="duration" class="time-total">0:00</span>
+                </div>
+
+                <div class="player-volume">
+                    <button id="volumeBtn" class="player-btn">🔊</button>
+                    <div class="volume-slider-wrapper">
+                        <input type="range" id="volumeSlider" class="volume-slider" min="0" max="1" step="0.01" value="0.7">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Now Playing -->
+            <div class="now-playing-card">
+                <div class="now-playing-info">
+                    <div class="now-playing-badge">EN COURS DE LECTURE</div>
+                    <h2 id="currentSongTitle" class="now-playing-title">Debout encore</h2>
+                    <p id="currentSongArtist" class="now-playing-artist">Hamadine</p>
+                </div>
+                <div class="waveform" id="waveform">
+                    <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+                    <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+                    <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+                    <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+                </div>
+            </div>
+
+            <!-- Tabs Navigation -->
+            <div class="tabs-container">
+                <button class="tab-btn active" data-tab="lyrics">📜 Paroles synchronisées</button>
+                <button class="tab-btn" data-tab="playlist">🎵 Liste des titres</button>
+                <button class="tab-btn" data-tab="info">ℹ️ Informations</button>
+            </div>
+
+            <!-- Tab: Lyrics -->
+            <div id="lyricsTab" class="tab-content active">
+                <div class="lyrics-card">
+                    <div class="lyrics-header-controls">
+                        <button id="fullscreenLyricsBtn" class="btn-outline">⛶ Mode plein écran</button>
+                        <div class="lyrics-timing-badge" id="lyricsTimingBadge">Live</div>
+                    </div>
+                    <div class="lyrics-container" id="lyricsContainer">
+                        <div class="lyrics-content" id="lyricsContent">
+                            <div class="lyrics-loading">
+                                <div class="loading-spinner"></div>
+                                <p>Chargement des paroles...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab: Playlist -->
+            <div id="playlistTab" class="tab-content">
+                <div class="playlist-card">
+                    <div class="playlist-header-actions">
+                        <button id="sortPlaylistBtn" class="btn-outline-small">📋 Par ordre</button>
+                        <button id="exportPlaylistBtn" class="btn-outline-small">💾 Exporter</button>
+                    </div>
                     <ul class="playlist" id="playlist">
-                        <li class="playlist-loading">Recherche des fichiers...</li>
+                        <li class="playlist-loading">Chargement...</li>
                     </ul>
                 </div>
             </div>
-        </div>
+
+            <!-- Tab: Info -->
+            <div id="infoTab" class="tab-content">
+                <div class="info-card">
+                    <h3>À propos de l'album</h3>
+                    <p><strong>Les dunes de ma vie</strong> est le premier album d'Hamadine, une œuvre personnelle qui explore les thèmes de la résilience, du cheminement intérieur et de l'identité. Chaque titre est une étape dans ce voyage à travers les dunes de l'existence.</p>
+                    
+                    <h4>🎤 Titres</h4>
+                    <ul class="info-list">
+                        <li><strong>Debout encore</strong> — Un hymne à la force intérieure</li>
+                        <li><strong>Le Chemin d'Hamadine</strong> — Le parcours unique d'un homme</li>
+                        <li><strong>Rien qu'un homme</strong> — Titre éponyme, l'essence de l'album</li>
+                    </ul>
+                    
+                    <h4>📀 Crédits</h4>
+                    <p>Paroles et musique : Hamadine<br>Production : Studio Les Dunes<br>Année : 2024</p>
+                    
+                    <div class="social-links">
+                        <a href="#" class="social-link">Instagram</a>
+                        <a href="#" class="social-link">Spotify</a>
+                        <a href="#" class="social-link">Apple Music</a>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Right Panel: Queue -->
+        <aside class="right-panel">
+            <div class="queue-header">
+                <h3>File d'attente</h3>
+                <button id="clearQueueBtn" class="icon-btn-small">🗑️</button>
+            </div>
+            <ul class="queue-list" id="queueList">
+                <li class="queue-empty">Aucune chanson en file</li>
+            </ul>
+            <div class="queue-footer">
+                <button id="saveQueueBtn" class="btn-outline-small">💾 Sauvegarder</button>
+            </div>
+        </aside>
     </div>
 
-    <!-- Modal plein écran -->
-    <div id="fullscreenModal" class="modal">
-        <div class="modal-content">
+    <!-- Modal Fullscreen Lyrics -->
+    <div id="fullscreenModal" class="modal-fullscreen">
+        <div class="modal-fullscreen-content">
             <div class="modal-header">
                 <h2 id="modalSongTitle">Hamadine - Les dunes de ma vie</h2>
-                <button id="closeModal" class="close-btn">&times;</button>
+                <button id="closeFullscreenBtn" class="close-modal-btn">&times;</button>
             </div>
-            <div class="modal-lyrics" id="modalLyrics">
-                <div class="lyrics-content-full" id="lyricsContentFull">
+            <div class="modal-lyrics-container" id="modalLyricsContainer">
+                <div class="modal-lyrics-content" id="modalLyricsContent">
                     <p>Chargement...</p>
                 </div>
             </div>
             <div class="modal-controls">
-                <button id="modalPrevBtn">⏮ Titre précédent</button>
-                <button id="modalPlayPauseBtn">⏸ Pause</button>
-                <button id="modalNextBtn">Titre suivant ⏭</button>
+                <button id="modalPrevBtn" class="modal-control-btn">⏮ Précédent</button>
+                <button id="modalPlayBtn" class="modal-control-btn play-btn">▶ Lecture</button>
+                <button id="modalNextBtn" class="modal-control-btn">Suivant ⏭</button>
             </div>
         </div>
     </div>
 
-    <audio id="audioPlayer" preload="metadata"></audio>
+    <audio id="audioPlayer" preload="auto"></audio>
 
     <script src="script.js"></script>
 </body>
