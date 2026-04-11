@@ -2,31 +2,32 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Rien qu'un homme - Lecteur Album</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Hamadine - Les dunes de ma vie | Rien qu'un homme</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
-        <!-- Interface principale -->
         <div class="player-card">
+            <!-- En-tête de l'album -->
             <div class="album-header">
                 <div class="album-art-wrapper">
-                    <img id="albumArt" src="cover.jpg" alt="Rien qu'un homme" class="album-art">
+                    <img id="albumArt" src="musique/cover.jpg" alt="Hamadine - Les dunes de ma vie" class="album-art" onerror="this.src='https://via.placeholder.com/300x300/1a1a2e/c4d2ff?text=Hamadine'">
                     <div class="vinyl-effect"></div>
                 </div>
                 <div class="album-info">
-                    <h1 class="album-title">Rien qu'un homme</h1>
-                    <p class="album-artist">[Nom de l'artiste]</p>
-                    <div class="song-count">14 titres</div>
+                    <h1 class="album-title">Les dunes de ma vie</h1>
+                    <p class="album-artist">Hamadine</p>
+                    <div class="album-subtitle">"Rien qu'un homme"</div>
+                    <div class="song-count" id="songCount">Chargement...</div>
                 </div>
             </div>
 
-            <!-- Contrôles principaux -->
+            <!-- Lecteur principal -->
             <div class="player-controls">
                 <div class="song-info">
-                    <h2 id="currentSongTitle" class="current-song">Chargement...</h2>
-                    <p id="currentSongArtist" class="current-artist">Artiste</p>
+                    <h2 id="currentSongTitle" class="current-song">Hamadine sur les dunes</h2>
+                    <p id="currentSongArtist" class="current-artist">Hamadine</p>
                 </div>
 
                 <div class="progress-section">
@@ -41,9 +42,9 @@
 
                 <div class="buttons">
                     <button id="shuffleBtn" class="control-btn" title="Lecture aléatoire">🔀</button>
-                    <button id="prevBtn" class="control-btn">⏮</button>
-                    <button id="playPauseBtn" class="control-btn play-btn">▶</button>
-                    <button id="nextBtn" class="control-btn">⏭</button>
+                    <button id="prevBtn" class="control-btn" title="Titre précédent">⏮</button>
+                    <button id="playPauseBtn" class="control-btn play-btn" title="Lecture/Pause">▶</button>
+                    <button id="nextBtn" class="control-btn" title="Titre suivant">⏭</button>
                     <button id="repeatBtn" class="control-btn" title="Répéter">🔁</button>
                 </div>
 
@@ -53,11 +54,11 @@
                 </div>
             </div>
 
-            <!-- Zone d'affichage des paroles -->
+            <!-- Paroles synchronisées -->
             <div class="lyrics-section">
                 <div class="lyrics-header">
-                    <h3>Paroles synchronisées</h3>
-                    <button id="toggleLyricsMode" class="mode-btn">📜 Mode plein écran</button>
+                    <h3>📜 Paroles synchronisées</h3>
+                    <button id="toggleLyricsMode" class="mode-btn">🎬 Mode plein écran</button>
                 </div>
                 <div class="lyrics-container" id="lyricsContainer">
                     <div class="lyrics-content" id="lyricsContent">
@@ -69,25 +70,25 @@
             <!-- Playlist -->
             <div class="playlist-section">
                 <div class="playlist-header">
-                    <h3>Liste des titres</h3>
+                    <h3>🎵 Liste des titres</h3>
                     <div class="playlist-controls">
-                        <button id="expandPlaylist" class="icon-btn">📋</button>
+                        <span class="playlist-count" id="playlistCount"></span>
                     </div>
                 </div>
                 <div class="playlist-container" id="playlistContainer">
                     <ul class="playlist" id="playlist">
-                        <!-- La playlist sera générée dynamiquement -->
+                        <li class="playlist-loading">Recherche des fichiers...</li>
                     </ul>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Modal pour les paroles en plein écran -->
+    <!-- Modal plein écran -->
     <div id="fullscreenModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 id="modalSongTitle">Rien qu'un homme</h2>
+                <h2 id="modalSongTitle">Hamadine - Les dunes de ma vie</h2>
                 <button id="closeModal" class="close-btn">&times;</button>
             </div>
             <div class="modal-lyrics" id="modalLyrics">
@@ -97,15 +98,14 @@
             </div>
             <div class="modal-controls">
                 <button id="modalPrevBtn">⏮ Titre précédent</button>
-                <button id="modalPlayPauseBtn">▶ Pause</button>
+                <button id="modalPlayPauseBtn">⏸ Pause</button>
                 <button id="modalNextBtn">Titre suivant ⏭</button>
             </div>
         </div>
     </div>
 
-    <audio id="audioPlayer"></audio>
+    <audio id="audioPlayer" preload="metadata"></audio>
 
-    <script src="lyrics.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
