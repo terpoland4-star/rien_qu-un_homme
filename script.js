@@ -5,6 +5,7 @@
 // ============================================
 
 // Configuration de l'album
+// ⚠️ CHEMINS CORRIGÉS selon vos fichiers GitHub
 const ALBUM_CONFIG = {
     name: "Les dunes de ma vie",
     artist: "Hamadine",
@@ -15,7 +16,7 @@ const ALBUM_CONFIG = {
             id: 1,
             title: "Debout encore",
             artist: "Hamadine",
-            file: "musique/Debout encore – Hamadine.mp3",
+            file: "musique/Debout encore – Hamadine.mp3",  // ✅ Nom exact avec tiret et espace
             duration: "0:00",
             durationSeconds: 0,
             description: "Un hymne à la résilience"
@@ -24,7 +25,7 @@ const ALBUM_CONFIG = {
             id: 2,
             title: "Le Chemin d'Hamadine",
             artist: "Hamadine",
-            file: "musique/Le Chemin d'Hamadine.mp3",
+            file: "musique/Le Chemin d’Hamadine.mp3",  // ✅ Apostrophe courbe
             duration: "0:00",
             durationSeconds: 0,
             description: "Le parcours d'un homme"
@@ -33,7 +34,7 @@ const ALBUM_CONFIG = {
             id: 3,
             title: "Rien qu'un homme",
             artist: "Hamadine",
-            file: "musique/Rien qu'un homme.mp3",
+            file: "musique/Rien qu’un homme.mp3",  // ✅ Apostrophe courbe
             duration: "0:00",
             durationSeconds: 0,
             description: "Titre éponyme de l'album"
@@ -171,6 +172,15 @@ function loadSong(index) {
     DOM.currentSongTitle.textContent = song.title;
     DOM.currentSongArtist.textContent = song.artist;
     DOM.modalSongTitle.textContent = `${song.title} - ${ALBUM_CONFIG.artist}`;
+    
+    // Gestion de la pochette d'album
+    const albumArtImg = document.getElementById('albumArt');
+    if (albumArtImg) {
+        albumArtImg.src = ALBUM_CONFIG.cover;
+        albumArtImg.onerror = function() {
+            this.src = 'https://placehold.co/400x400/1a1a2e/e8c9a0?text=Hamadine';
+        };
+    }
     
     // Afficher "bientôt disponible" pour les paroles
     displayLyricsComingSoon();
@@ -346,7 +356,7 @@ function renderQueue() {
 }
 
 // ============================================
-// MISE À JOUR DES DURÉES
+// MISE À JOUR DES DURÉES (IMPORTANT)
 // ============================================
 function updateDurations() {
     ALBUM_CONFIG.songs.forEach((song, index) => {
@@ -359,10 +369,30 @@ function updateDurations() {
                 const durationSpan = playlistItem.querySelector('.playlist-duration');
                 if (durationSpan) durationSpan.textContent = song.duration;
             }
+            console.log(`✅ Durée chargée: ${song.title} - ${song.duration}`);
         });
-        tempAudio.addEventListener('error', () => {
+        tempAudio.addEventListener('error', (e) => {
+            console.warn(`⚠️ Fichier non trouvé: ${song.file}`);
             song.duration = "00:00";
         });
+    });
+}
+
+// ============================================
+// VÉRIFICATION DES FICHIERS
+// ============================================
+function verifyAudioFiles() {
+    console.log("🔍 Vérification des fichiers audio...");
+    ALBUM_CONFIG.songs.forEach(song => {
+        fetch(song.file, { method: 'HEAD' })
+            .then(response => {
+                if (response.ok) {
+                    console.log(`✅ ${song.title} - OK`);
+                } else {
+                    console.warn(`❌ ${song.title} - NON TROUVÉ (${song.file})`);
+                }
+            })
+            .catch(() => console.warn(`❌ ${song.title} - ERREUR CHARGEMENT`));
     });
 }
 
@@ -506,7 +536,7 @@ async function init() {
     renderPlaylist();
     renderQueue();
     loadSong(0);
-    updateDurations();
+    updateDurations();  // ✅ Ici que les durées sont calculées
     initEventListeners();
     initTabs();
     loadFromLocalStorage();
@@ -514,7 +544,9 @@ async function init() {
     DOM.volumeSlider.value = AppState.volume;
     updateShuffleRepeatUI();
     
+    // Vérification des fichiers (utile pour debug)
     setTimeout(() => {
+        verifyAudioFiles();
         if (DOM.audio.error) {
             console.warn("⚠️ Vérifiez que les fichiers MP3 sont dans le dossier 'musique/'");
         }
