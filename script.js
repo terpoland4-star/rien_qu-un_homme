@@ -10,7 +10,7 @@ const ALBUM_CONFIG = {
     name: "Les dunes de ma vie",
     artist: "Hamadine",
     year: "2024",
-    cover: "musique/cover.jpg",
+    cover: "musique/Hamadine sur les dunes sous les étoiles.png",
     songs: [
         {
             id: 1,
