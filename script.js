@@ -1,301 +1,360 @@
-// Configuration de l'album "Rien qu'un homme" - Hamadine
-const albumConfig = {
-    name: "Rien qu'un homme",
+// ============================================
+// ALBUM: Les dunes de ma vie - Hamadine
+// Lecteur Audio Premium
+// Version 2.0 - Produit vendable
+// ============================================
+
+// Configuration de l'album
+const ALBUM_CONFIG = {
+    name: "Les dunes de ma vie",
     artist: "Hamadine",
-    cover: "Hamadine sur les dunes sous les étoiles.png",
     year: "2024",
+    cover: "musique/cover.jpg",
     songs: [
-        { 
-            id: 1, 
-            title: "Debout encore", 
-            artist: "Hamadine", 
-            file: "Debout encore - Hamadine.mp3", 
-            duration: "3:48",
+        {
+            id: 1,
+            title: "Debout encore",
+            artist: "Hamadine",
+            file: "musique/Debout encore – Hamadine.mp3",
+            duration: "0:00",
+            durationSeconds: 0,
             description: "Un hymne à la résilience"
         },
-        { 
-            id: 2, 
-            title: "Le Chemin d'Hamadine", 
-            artist: "Hamadine", 
-            file: "Le Chemin d'Hamadine.mp3", 
-            duration: "3:14",
+        {
+            id: 2,
+            title: "Le Chemin d'Hamadine",
+            artist: "Hamadine",
+            file: "musique/Le Chemin d'Hamadine.mp3",
+            duration: "0:00",
+            durationSeconds: 0,
             description: "Le parcours d'un homme"
         },
-        { 
-            id: 3, 
-            title: "Rien qu'un homme", 
-            artist: "Hamadine", 
-            file: "Rien qu'un homme.mp3", 
-            duration: "3:10",
+        {
+            id: 3,
+            title: "Rien qu'un homme",
+            artist: "Hamadine",
+            file: "musique/Rien qu'un homme.mp3",
+            duration: "0:00",
+            durationSeconds: 0,
             description: "Titre éponyme de l'album"
         }
     ]
 };
 
-// Variables globales
-let currentSongIndex = 0;
-let isPlaying = false;
-let isShuffle = false;
-let isRepeat = false;
-let currentLyrics = [];
-let animationFrameId = null;
+// État de l'application
+let AppState = {
+    currentSongIndex: 0,
+    isPlaying: false,
+    isShuffle: false,
+    isRepeat: false,
+    currentQueue: [],
+    volume: 0.7,
+    activeTab: 'lyrics'
+};
 
 // Éléments DOM
-const audio = document.getElementById('audioPlayer');
-const playPauseBtn = document.getElementById('playPauseBtn');
-const prevBtn = document.getElementById('prevBtn');
-const nextBtn = document.getElementById('nextBtn');
-const shuffleBtn = document.getElementById('shuffleBtn');
-const repeatBtn = document.getElementById('repeatBtn');
-const progressContainer = document.getElementById('progressContainer');
-const progressBar = document.getElementById('progressBar');
-const currentTimeEl = document.getElementById('currentTime');
-const durationEl = document.getElementById('duration');
-const currentSongTitle = document.getElementById('currentSongTitle');
-const currentSongArtist = document.getElementById('currentSongArtist');
-const volumeSlider = document.getElementById('volumeSlider');
-const playlistEl = document.getElementById('playlist');
-const lyricsContent = document.getElementById('lyricsContent');
-const modal = document.getElementById('fullscreenModal');
-const modalLyrics = document.getElementById('lyricsContentFull');
-const modalSongTitle = document.getElementById('modalSongTitle');
-const closeModal = document.getElementById('closeModal');
-const toggleLyricsMode = document.getElementById('toggleLyricsMode');
-const modalPrevBtn = document.getElementById('modalPrevBtn');
-const modalPlayPauseBtn = document.getElementById('modalPlayPauseBtn');
-const modalNextBtn = document.getElementById('modalNextBtn');
-const albumArt = document.getElementById('albumArt');
-const songCountSpan = document.getElementById('songCount');
-const playlistCountSpan = document.getElementById('playlistCount');
+const DOM = {
+    audio: document.getElementById('audioPlayer'),
+    playPauseBtn: document.getElementById('playPauseBtn'),
+    prevBtn: document.getElementById('prevBtn'),
+    nextBtn: document.getElementById('nextBtn'),
+    shuffleBtn: document.getElementById('shuffleBtn'),
+    repeatBtn: document.getElementById('repeatBtn'),
+    playAllBtn: document.getElementById('playAllBtn'),
+    shufflePlayBtn: document.getElementById('shufflePlayBtn'),
+    progressContainer: document.getElementById('progressContainer'),
+    progressBar: document.getElementById('progressBar'),
+    progressHandle: document.getElementById('progressHandle'),
+    currentTime: document.getElementById('currentTime'),
+    duration: document.getElementById('duration'),
+    volumeSlider: document.getElementById('volumeSlider'),
+    volumeBtn: document.getElementById('volumeBtn'),
+    currentSongTitle: document.getElementById('currentSongTitle'),
+    currentSongArtist: document.getElementById('currentSongArtist'),
+    lyricsContent: document.getElementById('lyricsContent'),
+    playlist: document.getElementById('playlist'),
+    queueList: document.getElementById('queueList'),
+    modal: document.getElementById('fullscreenModal'),
+    modalLyrics: document.getElementById('modalLyricsContent'),
+    modalSongTitle: document.getElementById('modalSongTitle'),
+    modalPrevBtn: document.getElementById('modalPrevBtn'),
+    modalPlayBtn: document.getElementById('modalPlayBtn'),
+    modalNextBtn: document.getElementById('modalNextBtn'),
+    closeModal: document.getElementById('closeFullscreenBtn'),
+    fullscreenBtn: document.getElementById('fullscreenLyricsBtn'),
+    sortPlaylistBtn: document.getElementById('sortPlaylistBtn'),
+    exportPlaylistBtn: document.getElementById('exportPlaylistBtn'),
+    clearQueueBtn: document.getElementById('clearQueueBtn'),
+    saveQueueBtn: document.getElementById('saveQueueBtn')
+};
 
-// Mettre à jour le compteur de chansons
-songCountSpan.textContent = `${albumConfig.songs.length} titres`;
-playlistCountSpan.textContent = `${albumConfig.songs.length} titres`;
-
-// Utilitaires
+// ============================================
+// FONCTIONS UTILITAIRES
+// ============================================
 function formatTime(seconds) {
-    if (isNaN(seconds)) return "0:00";
+    if (isNaN(seconds) || seconds === Infinity) return "0:00";
     const mins = Math.floor(seconds / 60);
     const secs = Math.floor(seconds % 60);
     return `${mins}:${secs.toString().padStart(2, '0')}`;
 }
 
-// Chargement des paroles
-function loadLyrics(songId) {
-    if (window.albumLyrics && window.albumLyrics[songId]) {
-        currentLyrics = window.albumLyrics[songId];
-        displayLyrics(currentLyrics, audio.currentTime);
-    } else {
-        currentLyrics = [];
-        lyricsContent.innerHTML = '<p class="lyrics-placeholder">✨ Paroles en cours d\'écriture... ✨<br><small>Bientôt disponibles</small></p>';
-        if (modalLyrics) {
-            modalLyrics.innerHTML = '<p class="lyrics-placeholder">✨ Paroles à venir ✨</p>';
-        }
+function saveToLocalStorage() {
+    const saveData = {
+        queue: AppState.currentQueue,
+        volume: AppState.volume,
+        isShuffle: AppState.isShuffle,
+        isRepeat: AppState.isRepeat
+    };
+    localStorage.setItem('hamadine_player', JSON.stringify(saveData));
+}
+
+function loadFromLocalStorage() {
+    const saved = localStorage.getItem('hamadine_player');
+    if (saved) {
+        try {
+            const data = JSON.parse(saved);
+            if (data.queue) AppState.currentQueue = data.queue;
+            if (data.volume) {
+                AppState.volume = data.volume;
+                DOM.audio.volume = data.volume;
+                DOM.volumeSlider.value = data.volume;
+            }
+            AppState.isShuffle = data.isShuffle || false;
+            AppState.isRepeat = data.isRepeat || false;
+            updateShuffleRepeatUI();
+            renderQueue();
+        } catch(e) { console.warn('Erreur chargement save'); }
     }
 }
 
-// Affichage des paroles synchronisées
-function displayLyrics(lyrics, currentTime) {
-    if (!lyrics || lyrics.length === 0) {
-        if (lyricsContent.innerHTML.includes('Paroles en cours')) return;
-        lyricsContent.innerHTML = '<p class="lyrics-placeholder">✨ Paroles en cours d\'écriture... ✨<br><small>Bientôt disponibles</small></p>';
-        if (modalLyrics && !modalLyrics.innerHTML.includes('Paroles à venir')) {
-            modalLyrics.innerHTML = '<p class="lyrics-placeholder">✨ Paroles à venir ✨</p>';
-        }
-        return;
-    }
-
-    let activeIndex = -1;
-    for (let i = 0; i < lyrics.length; i++) {
-        if (currentTime >= lyrics[i].time) {
-            activeIndex = i;
-        } else {
-            break;
-        }
-    }
-
-    // Mise à jour des paroles dans l'interface principale
-    let lyricsHtml = '';
-    lyrics.forEach((line, index) => {
-        const activeClass = (index === activeIndex) ? 'active' : '';
-        lyricsHtml += `<div class="lyrics-line ${activeClass}" data-time="${line.time}">${line.text}</div>`;
-    });
-    lyricsContent.innerHTML = lyricsHtml;
-
-    // Mise à jour des paroles dans le modal
-    if (modalLyrics) {
-        let modalHtml = '';
-        lyrics.forEach((line, index) => {
-            const activeClass = (index === activeIndex) ? 'active' : '';
-            modalHtml += `<div class="lyrics-line-full ${activeClass}" data-time="${line.time}">${line.text}</div>`;
-        });
-        modalLyrics.innerHTML = modalHtml;
-    }
-
-    // Scroll automatique vers la ligne active
-    if (activeIndex !== -1) {
-        const activeLine = document.querySelector('.lyrics-line.active');
-        if (activeLine) {
-            activeLine.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
-        const activeLineModal = document.querySelector('.lyrics-line-full.active');
-        if (activeLineModal && modal.style.display === 'block') {
-            activeLineModal.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
-    }
+function updateShuffleRepeatUI() {
+    DOM.shuffleBtn.style.opacity = AppState.isShuffle ? '1' : '0.5';
+    DOM.shuffleBtn.style.background = AppState.isShuffle ? 'rgba(232, 201, 160, 0.2)' : 'transparent';
+    DOM.repeatBtn.style.opacity = AppState.isRepeat ? '1' : '0.5';
+    DOM.repeatBtn.style.background = AppState.isRepeat ? 'rgba(232, 201, 160, 0.2)' : 'transparent';
 }
 
-// Animation de mise à jour des paroles
-function startLyricsSync() {
-    if (animationFrameId) {
-        cancelAnimationFrame(animationFrameId);
-    }
+// ============================================
+// GESTION DES PAROLES (Version "Bientôt disponible")
+// ============================================
+function displayLyricsComingSoon() {
+    const comingSoonHtml = `
+        <div class="lyrics-loading" style="text-align: center; padding: 60px 20px;">
+            <div style="font-size: 3rem; margin-bottom: 20px;">📜</div>
+            <h3 style="color: var(--accent-primary); margin-bottom: 12px;">Paroles bientôt disponibles</h3>
+            <p style="color: var(--text-secondary); max-width: 400px; margin: 0 auto;">
+                Les paroles synchronisées de "${ALBUM_CONFIG.songs[AppState.currentSongIndex]?.title}" 
+                seront ajoutées prochainement.
+            </p>
+            <div style="margin-top: 24px;">
+                <div class="loading-spinner" style="margin: 0 auto 16px;"></div>
+                <p style="font-size: 0.85rem; color: var(--text-secondary);">En préparation...</p>
+            </div>
+        </div>
+    `;
     
-    function update() {
-        if (audio && !audio.paused) {
-            displayLyrics(currentLyrics, audio.currentTime);
-        }
-        animationFrameId = requestAnimationFrame(update);
+    DOM.lyricsContent.innerHTML = comingSoonHtml;
+    
+    if (DOM.modalLyrics) {
+        DOM.modalLyrics.innerHTML = comingSoonHtml;
     }
-    update();
 }
 
-// Chargement d'une chanson
+// ============================================
+// GESTION DE LA LECTURE
+// ============================================
 function loadSong(index) {
-    const song = albumConfig.songs[index];
+    const song = ALBUM_CONFIG.songs[index];
     if (!song) return;
     
-    audio.src = song.file;
-    currentSongTitle.textContent = song.title;
-    currentSongArtist.textContent = song.artist;
-    modalSongTitle.textContent = `${song.title} - Hamadine | Rien qu'un homme`;
+    DOM.audio.src = song.file;
+    DOM.currentSongTitle.textContent = song.title;
+    DOM.currentSongArtist.textContent = song.artist;
+    DOM.modalSongTitle.textContent = `${song.title} - ${ALBUM_CONFIG.artist}`;
     
-    // Gestion de la pochette d'album
-    albumArt.src = albumConfig.cover;
-    albumArt.onerror = function() {
-        this.src = 'https://via.placeholder.com/300x300/1a1a2e/a8c0ff?text=Rien+qu\'un+homme';
-    };
+    // Afficher "bientôt disponible" pour les paroles
+    displayLyricsComingSoon();
     
-    // Charger les paroles
-    loadLyrics(song.id);
-    
-    // Mettre à jour la playlist active
+    // Mise à jour playlist active
     document.querySelectorAll('.playlist-item').forEach((item, i) => {
-        if (i === index) {
-            item.classList.add('active');
-        } else {
-            item.classList.remove('active');
-        }
+        item.classList.toggle('active', i === index);
     });
     
-    // Mettre à jour le titre dans le modal
-    if (modal.style.display === 'block') {
-        modalSongTitle.textContent = `${song.title} - Hamadine`;
+    // Initialiser la queue si vide
+    if (AppState.currentQueue.length === 0) {
+        AppState.currentQueue = ALBUM_CONFIG.songs.map(s => s.id);
+        renderQueue();
     }
     
-    if (isPlaying) {
-        audio.play();
+    if (AppState.isPlaying) {
+        DOM.audio.play().catch(e => console.log('Auto-play bloqué'));
     }
-    
-    // Démarrer la synchronisation des paroles
-    startLyricsSync();
 }
 
-// Contrôles de lecture
 function playSong() {
-    audio.play();
-    isPlaying = true;
-    playPauseBtn.textContent = '⏸';
-    modalPlayPauseBtn.textContent = '⏸ Pause';
-    document.querySelector('.album-art-wrapper')?.classList.add('playing');
+    DOM.audio.play();
+    AppState.isPlaying = true;
+    DOM.playPauseBtn.textContent = '⏸';
+    if (DOM.modalPlayBtn) DOM.modalPlayBtn.textContent = '⏸ Pause';
+    animateWaveform(true);
 }
 
 function pauseSong() {
-    audio.pause();
-    isPlaying = false;
-    playPauseBtn.textContent = '▶';
-    modalPlayPauseBtn.textContent = '▶ Lecture';
-    document.querySelector('.album-art-wrapper')?.classList.remove('playing');
+    DOM.audio.pause();
+    AppState.isPlaying = false;
+    DOM.playPauseBtn.textContent = '▶';
+    if (DOM.modalPlayBtn) DOM.modalPlayBtn.textContent = '▶ Lecture';
+    animateWaveform(false);
 }
 
 function togglePlayPause() {
-    if (isPlaying) {
-        pauseSong();
-    } else {
-        playSong();
-    }
+    AppState.isPlaying ? pauseSong() : playSong();
 }
 
 function nextSong() {
-    if (isShuffle) {
-        let newIndex;
+    let nextIndex;
+    if (AppState.isShuffle) {
         do {
-            newIndex = Math.floor(Math.random() * albumConfig.songs.length);
-        } while (newIndex === currentSongIndex && albumConfig.songs.length > 1);
-        currentSongIndex = newIndex;
+            nextIndex = Math.floor(Math.random() * ALBUM_CONFIG.songs.length);
+        } while (nextIndex === AppState.currentSongIndex && ALBUM_CONFIG.songs.length > 1);
     } else {
-        currentSongIndex = (currentSongIndex + 1) % albumConfig.songs.length;
+        nextIndex = (AppState.currentSongIndex + 1) % ALBUM_CONFIG.songs.length;
     }
-    loadSong(currentSongIndex);
-    if (isPlaying) playSong();
+    AppState.currentSongIndex = nextIndex;
+    loadSong(AppState.currentSongIndex);
+    if (AppState.isPlaying) playSong();
 }
 
 function prevSong() {
-    if (audio.currentTime > 3) {
-        audio.currentTime = 0;
+    if (DOM.audio.currentTime > 3) {
+        DOM.audio.currentTime = 0;
     } else {
-        currentSongIndex = (currentSongIndex - 1 + albumConfig.songs.length) % albumConfig.songs.length;
-        loadSong(currentSongIndex);
-        if (isPlaying) playSong();
+        AppState.currentSongIndex = (AppState.currentSongIndex - 1 + ALBUM_CONFIG.songs.length) % ALBUM_CONFIG.songs.length;
+        loadSong(AppState.currentSongIndex);
+        if (AppState.isPlaying) playSong();
     }
 }
 
 function updateProgress() {
-    const progressPercent = (audio.currentTime / audio.duration) * 100;
-    progressBar.style.width = `${progressPercent}%`;
-    currentTimeEl.textContent = formatTime(audio.currentTime);
+    const percent = (DOM.audio.currentTime / DOM.audio.duration) * 100;
+    DOM.progressBar.style.width = `${percent}%`;
+    DOM.currentTime.textContent = formatTime(DOM.audio.currentTime);
 }
 
 function setProgress(e) {
-    const width = this.clientWidth;
-    const clickX = e.offsetX;
-    const duration = audio.duration;
-    audio.currentTime = (clickX / width) * duration;
+    const rect = DOM.progressContainer.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const percent = x / rect.width;
+    DOM.audio.currentTime = percent * DOM.audio.duration;
 }
 
-// Création de la playlist
-function createPlaylist() {
-    playlistEl.innerHTML = '';
-    albumConfig.songs.forEach((song, index) => {
+// ============================================
+// ANIMATION WAVEFORM
+// ============================================
+function animateWaveform(active) {
+    const bars = document.querySelectorAll('.wave-bar');
+    if (active) {
+        bars.forEach((bar, i) => {
+            bar.style.animation = `wave 1s ease-in-out infinite`;
+            bar.style.animationDelay = `${i * 0.1}s`;
+        });
+    } else {
+        bars.forEach(bar => {
+            bar.style.animation = 'none';
+            bar.style.height = '20px';
+        });
+    }
+}
+
+// ============================================
+// PLAYLIST
+// ============================================
+function renderPlaylist() {
+    DOM.playlist.innerHTML = '';
+    ALBUM_CONFIG.songs.forEach((song, index) => {
         const li = document.createElement('li');
-        li.className = 'playlist-item';
+        li.className = `playlist-item ${index === AppState.currentSongIndex ? 'active' : ''}`;
         li.innerHTML = `
             <div class="playlist-number">${(index + 1).toString().padStart(2, '0')}</div>
             <div class="playlist-info">
-                <div class="playlist-title">${song.title}</div>
-                <div class="playlist-artist">${song.artist}</div>
-                <div class="playlist-description">${song.description || ''}</div>
+                <div class="playlist-title">${escapeHtml(song.title)}</div>
+                <div class="playlist-artist">${escapeHtml(song.artist)}</div>
+                <div class="playlist-description">${escapeHtml(song.description)}</div>
             </div>
             <div class="playlist-duration">${song.duration}</div>
             <div class="playlist-play">▶</div>
         `;
         li.addEventListener('click', () => {
-            currentSongIndex = index;
-            loadSong(currentSongIndex);
+            AppState.currentSongIndex = index;
+            loadSong(AppState.currentSongIndex);
             playSong();
         });
-        playlistEl.appendChild(li);
+        DOM.playlist.appendChild(li);
     });
 }
 
-// Mise à jour des durées
-async function updateDurations() {
-    for (let i = 0; i < albumConfig.songs.length; i++) {
-        const song = albumConfig.songs[i];
+// Échapper les caractères HTML
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+// ============================================
+// QUEUE (File d'attente)
+// ============================================
+function renderQueue() {
+    if (!DOM.queueList) return;
+    
+    if (AppState.currentQueue.length === 0) {
+        DOM.queueList.innerHTML = '<li class="queue-empty">Aucune chanson en file</li>';
+        return;
+    }
+    
+    DOM.queueList.innerHTML = '';
+    AppState.currentQueue.forEach((songId, idx) => {
+        const song = ALBUM_CONFIG.songs.find(s => s.id === songId);
+        if (!song) return;
+        const li = document.createElement('li');
+        li.className = 'queue-item';
+        li.innerHTML = `
+            <span class="queue-number">${idx + 1}</span>
+            <div class="queue-info">
+                <div class="queue-title">${escapeHtml(song.title)}</div>
+                <div class="queue-artist">${escapeHtml(song.artist)}</div>
+            </div>
+            <button class="queue-item-remove" data-id="${songId}">✕</button>
+        `;
+        li.addEventListener('click', (e) => {
+            if (e.target.classList.contains('queue-item-remove')) return;
+            const newIndex = ALBUM_CONFIG.songs.findIndex(s => s.id === songId);
+            if (newIndex !== -1) {
+                AppState.currentSongIndex = newIndex;
+                loadSong(AppState.currentSongIndex);
+                playSong();
+            }
+        });
+        const removeBtn = li.querySelector('.queue-item-remove');
+        removeBtn?.addEventListener('click', (e) => {
+            e.stopPropagation();
+            AppState.currentQueue = AppState.currentQueue.filter(id => id !== songId);
+            renderQueue();
+            saveToLocalStorage();
+        });
+        DOM.queueList.appendChild(li);
+    });
+}
+
+// ============================================
+// MISE À JOUR DES DURÉES
+// ============================================
+function updateDurations() {
+    ALBUM_CONFIG.songs.forEach((song, index) => {
         const tempAudio = new Audio(song.file);
         tempAudio.addEventListener('loadedmetadata', () => {
+            song.durationSeconds = tempAudio.duration;
             song.duration = formatTime(tempAudio.duration);
-            const playlistItem = playlistEl.children[i];
+            const playlistItem = DOM.playlist?.children[index];
             if (playlistItem) {
                 const durationSpan = playlistItem.querySelector('.playlist-duration');
                 if (durationSpan) durationSpan.textContent = song.duration;
@@ -303,141 +362,166 @@ async function updateDurations() {
         });
         tempAudio.addEventListener('error', () => {
             song.duration = "00:00";
-            const playlistItem = playlistEl.children[i];
-            if (playlistItem) {
-                const durationSpan = playlistItem.querySelector('.playlist-duration');
-                if (durationSpan) durationSpan.textContent = "??:??";
-            }
         });
-    }
+    });
 }
 
-// Événements audio
-audio.addEventListener('timeupdate', () => {
-    updateProgress();
-    displayLyrics(currentLyrics, audio.currentTime);
-});
-audio.addEventListener('loadedmetadata', () => {
-    durationEl.textContent = formatTime(audio.duration);
-});
-audio.addEventListener('ended', () => {
-    if (isRepeat) {
-        audio.currentTime = 0;
+// ============================================
+// EXPORT PLAYLIST
+// ============================================
+function exportPlaylist() {
+    const playlistData = ALBUM_CONFIG.songs.map((song, i) => ({
+        position: i + 1,
+        title: song.title,
+        artist: song.artist,
+        duration: song.duration,
+        description: song.description
+    }));
+    const blob = new Blob([JSON.stringify(playlistData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'hamadine_playlist.json';
+    a.click();
+    URL.revokeObjectURL(url);
+}
+
+// ============================================
+// TABS NAVIGATION
+// ============================================
+function initTabs() {
+    const tabs = document.querySelectorAll('.tab-btn');
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            const tabId = tab.dataset.tab;
+            tabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(`${tabId}Tab`).classList.add('active');
+            AppState.activeTab = tabId;
+        });
+    });
+}
+
+// ============================================
+// INITIALISATION
+// ============================================
+function initEventListeners() {
+    DOM.playPauseBtn.addEventListener('click', togglePlayPause);
+    DOM.prevBtn.addEventListener('click', prevSong);
+    DOM.nextBtn.addEventListener('click', nextSong);
+    DOM.progressContainer.addEventListener('click', setProgress);
+    DOM.volumeSlider.addEventListener('input', (e) => {
+        AppState.volume = parseFloat(e.target.value);
+        DOM.audio.volume = AppState.volume;
+        saveToLocalStorage();
+    });
+    DOM.volumeBtn?.addEventListener('click', () => {
+        if (DOM.audio.volume > 0) {
+            DOM.audio.volume = 0;
+            DOM.volumeSlider.value = 0;
+        } else {
+            DOM.audio.volume = AppState.volume || 0.7;
+            DOM.volumeSlider.value = AppState.volume || 0.7;
+        }
+    });
+    DOM.shuffleBtn.addEventListener('click', () => {
+        AppState.isShuffle = !AppState.isShuffle;
+        updateShuffleRepeatUI();
+        saveToLocalStorage();
+    });
+    DOM.repeatBtn.addEventListener('click', () => {
+        AppState.isRepeat = !AppState.isRepeat;
+        updateShuffleRepeatUI();
+        saveToLocalStorage();
+    });
+    DOM.playAllBtn?.addEventListener('click', () => {
+        AppState.currentSongIndex = 0;
+        loadSong(0);
         playSong();
-    } else {
+    });
+    DOM.shufflePlayBtn?.addEventListener('click', () => {
+        AppState.isShuffle = true;
+        updateShuffleRepeatUI();
         nextSong();
-    }
-});
-
-// Gestion des erreurs audio
-audio.addEventListener('error', (e) => {
-    console.error('Erreur audio:', e);
-    const song = albumConfig.songs[currentSongIndex];
-    lyricsContent.innerHTML = `<p class="lyrics-placeholder">⚠️ Impossible de charger "${song.title}"<br>Vérifiez que le fichier existe bien</p>`;
-});
-
-// Contrôle du volume
-volumeSlider.addEventListener('input', (e) => {
-    audio.volume = e.target.value;
-});
-
-// Boutons de contrôle
-playPauseBtn.addEventListener('click', togglePlayPause);
-prevBtn.addEventListener('click', prevSong);
-nextBtn.addEventListener('click', nextSong);
-progressContainer.addEventListener('click', setProgress);
-
-// Mode aléatoire
-shuffleBtn.addEventListener('click', () => {
-    isShuffle = !isShuffle;
-    shuffleBtn.style.opacity = isShuffle ? '1' : '0.5';
-    shuffleBtn.style.transform = isShuffle ? 'scale(1.1)' : 'scale(1)';
-});
-
-// Mode répétition
-repeatBtn.addEventListener('click', () => {
-    isRepeat = !isRepeat;
-    repeatBtn.style.opacity = isRepeat ? '1' : '0.5';
-    repeatBtn.style.transform = isRepeat ? 'scale(1.1)' : 'scale(1)';
-});
-
-// Mode plein écran des paroles
-toggleLyricsMode.addEventListener('click', () => {
-    modal.style.display = 'block';
-    if (currentLyrics.length > 0) {
-        displayLyrics(currentLyrics, audio.currentTime);
-    }
-    document.body.style.overflow = 'hidden';
-});
-
-closeModal.addEventListener('click', () => {
-    modal.style.display = 'none';
-    document.body.style.overflow = 'auto';
-});
-
-// Contrôles du modal
-modalPrevBtn.addEventListener('click', () => {
-    prevSong();
-    if (currentLyrics.length > 0) {
-        displayLyrics(currentLyrics, audio.currentTime);
-    }
-});
-
-modalPlayPauseBtn.addEventListener('click', () => {
-    togglePlayPause();
-});
-
-modalNextBtn.addEventListener('click', () => {
-    nextSong();
-    if (currentLyrics.length > 0) {
-        displayLyrics(currentLyrics, audio.currentTime);
-    }
-});
-
-// Raccourcis clavier
-document.addEventListener('keydown', (e) => {
-    switch(e.code) {
-        case 'Space':
+        playSong();
+    });
+    DOM.fullscreenBtn?.addEventListener('click', () => {
+        DOM.modal.style.display = 'block';
+    });
+    DOM.closeModal?.addEventListener('click', () => {
+        DOM.modal.style.display = 'none';
+    });
+    DOM.modalPrevBtn?.addEventListener('click', prevSong);
+    DOM.modalPlayBtn?.addEventListener('click', togglePlayPause);
+    DOM.modalNextBtn?.addEventListener('click', nextSong);
+    DOM.sortPlaylistBtn?.addEventListener('click', () => {
+        ALBUM_CONFIG.songs.sort((a, b) => a.title.localeCompare(b.title));
+        renderPlaylist();
+    });
+    DOM.exportPlaylistBtn?.addEventListener('click', exportPlaylist);
+    DOM.clearQueueBtn?.addEventListener('click', () => {
+        AppState.currentQueue = [];
+        renderQueue();
+        saveToLocalStorage();
+    });
+    DOM.saveQueueBtn?.addEventListener('click', saveToLocalStorage);
+    
+    // Événements audio
+    DOM.audio.addEventListener('timeupdate', updateProgress);
+    DOM.audio.addEventListener('loadedmetadata', () => {
+        DOM.duration.textContent = formatTime(DOM.audio.duration);
+    });
+    DOM.audio.addEventListener('ended', () => {
+        if (AppState.isRepeat) {
+            DOM.audio.currentTime = 0;
+            playSong();
+        } else {
+            nextSong();
+        }
+    });
+    
+    // Raccourcis clavier
+    document.addEventListener('keydown', (e) => {
+        if (e.code === 'Space') {
             e.preventDefault();
             togglePlayPause();
-            break;
-        case 'ArrowLeft':
-            prevSong();
-            break;
-        case 'ArrowRight':
-            nextSong();
-            break;
-        case 'Escape':
-            if (modal.style.display === 'block') {
-                modal.style.display = 'none';
-                document.body.style.overflow = 'auto';
-            }
-            break;
-    }
-});
-
-// Click en dehors du modal pour fermer
-modal.addEventListener('click', (e) => {
-    if (e.target === modal) {
-        modal.style.display = 'none';
-        document.body.style.overflow = 'auto';
-    }
-});
-
-// Initialisation
-function init() {
-    createPlaylist();
-    loadSong(0);
-    updateDurations();
-    audio.volume = 0.7;
-    volumeSlider.value = 0.7;
-    
-    // Afficher un message si les fichiers MP3 ne sont pas trouvés
-    setTimeout(() => {
-        if (audio.error) {
-            console.warn("Assurez-vous que les fichiers MP3 sont dans le même dossier que index.html");
         }
-    }, 1000);
+        if (e.code === 'ArrowLeft') prevSong();
+        if (e.code === 'ArrowRight') nextSong();
+        if (e.code === 'Escape' && DOM.modal.style.display === 'block') {
+            DOM.modal.style.display = 'none';
+        }
+    });
+    
+    // Fermer modal au clic externe
+    DOM.modal?.addEventListener('click', (e) => {
+        if (e.target === DOM.modal) DOM.modal.style.display = 'none';
+    });
 }
 
+async function init() {
+    renderPlaylist();
+    renderQueue();
+    loadSong(0);
+    updateDurations();
+    initEventListeners();
+    initTabs();
+    loadFromLocalStorage();
+    DOM.audio.volume = AppState.volume;
+    DOM.volumeSlider.value = AppState.volume;
+    updateShuffleRepeatUI();
+    
+    setTimeout(() => {
+        if (DOM.audio.error) {
+            console.warn("⚠️ Vérifiez que les fichiers MP3 sont dans le dossier 'musique/'");
+        }
+    }, 1000);
+    
+    console.log("🎵 Lecteur Hamadine - Les dunes de ma vie - Prêt !");
+}
+
+// Démarrer l'application
 init();
