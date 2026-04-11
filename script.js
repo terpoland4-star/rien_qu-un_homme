@@ -2,7 +2,7 @@
 const albumConfig = {
     name: "Rien qu'un homme",
     artist: "Hamadine",
-    cover: "cover.jpg",
+    cover: "Hamadine sur les dunes sous les étoiles.png",
     year: "2024",
     songs: [
         { 
