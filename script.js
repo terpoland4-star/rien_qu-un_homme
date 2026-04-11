@@ -10,7 +10,7 @@ const albumConfig = {
             title: "Debout encore", 
             artist: "Hamadine", 
             file: "Debout encore - Hamadine.mp3", 
-            duration: "0:00",
+            duration: "3:48",
             description: "Un hymne à la résilience"
         },
         { 
@@ -18,7 +18,7 @@ const albumConfig = {
             title: "Le Chemin d'Hamadine", 
             artist: "Hamadine", 
             file: "Le Chemin d'Hamadine.mp3", 
-            duration: "0:00",
+            duration: "3:14",
             description: "Le parcours d'un homme"
         },
         { 
@@ -26,7 +26,7 @@ const albumConfig = {
             title: "Rien qu'un homme", 
             artist: "Hamadine", 
             file: "Rien qu'un homme.mp3", 
-            duration: "0:00",
+            duration: "3:10",
             description: "Titre éponyme de l'album"
         }
     ]
