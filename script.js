@@ -17,7 +17,7 @@ const ALBUM_CONFIG = {
             title: "Debout encore",
             artist: "Hamadine",
             file: "musique/Debout encore – Hamadine.mp3",  // ✅ Nom exact avec tiret et espace
-            duration: "0:00",
+            duration: "3:48",
             durationSeconds: 0,
             description: "Un hymne à la résilience"
         },
@@ -26,7 +26,7 @@ const ALBUM_CONFIG = {
             title: "Le Chemin d'Hamadine",
             artist: "Hamadine",
             file: "musique/Le Chemin d’Hamadine.mp3",  // ✅ Apostrophe courbe
-            duration: "0:00",
+            duration: "3:14",
             durationSeconds: 0,
             description: "Le parcours d'un homme"
         },
@@ -35,7 +35,7 @@ const ALBUM_CONFIG = {
             title: "Rien qu'un homme",
             artist: "Hamadine",
             file: "musique/Rien qu’un homme.mp3",  // ✅ Apostrophe courbe
-            duration: "0:00",
+            duration: "3:10",
             durationSeconds: 0,
             description: "Titre éponyme de l'album"
         }
