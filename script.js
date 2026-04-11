@@ -1,23 +1,34 @@
-// Configuration de l'album
+// Configuration de l'album "Rien qu'un homme" - Hamadine
 const albumConfig = {
     name: "Rien qu'un homme",
-    artist: "Votre Artiste", // À remplacer par votre nom
+    artist: "Hamadine",
     cover: "cover.jpg",
+    year: "2024",
     songs: [
-        { id: 1, title: "Titre 1", artist: "Votre Artiste", file: "musiques/titre1.mp3", duration: "0:00" },
-        { id: 2, title: "Titre 2", artist: "Votre Artiste", file: "musiques/titre2.mp3", duration: "0:00" },
-        { id: 3, title: "Titre 3", artist: "Votre Artiste", file: "musiques/titre3.mp3", duration: "0:00" },
-        { id: 4, title: "Titre 4", artist: "Votre Artiste", file: "musiques/titre4.mp3", duration: "0:00" },
-        { id: 5, title: "Titre 5", artist: "Votre Artiste", file: "musiques/titre5.mp3", duration: "0:00" },
-        { id: 6, title: "Titre 6", artist: "Votre Artiste", file: "musiques/titre6.mp3", duration: "0:00" },
-        { id: 7, title: "Titre 7", artist: "Votre Artiste", file: "musiques/titre7.mp3", duration: "0:00" },
-        { id: 8, title: "Titre 8", artist: "Votre Artiste", file: "musiques/titre8.mp3", duration: "0:00" },
-        { id: 9, title: "Titre 9", artist: "Votre Artiste", file: "musiques/titre9.mp3", duration: "0:00" },
-        { id: 10, title: "Titre 10", artist: "Votre Artiste", file: "musiques/titre10.mp3", duration: "0:00" },
-        { id: 11, title: "Titre 11", artist: "Votre Artiste", file: "musiques/titre11.mp3", duration: "0:00" },
-        { id: 12, title: "Titre 12", artist: "Votre Artiste", file: "musiques/titre12.mp3", duration: "0:00" },
-        { id: 13, title: "Titre 13", artist: "Votre Artiste", file: "musiques/titre13.mp3", duration: "0:00" },
-        { id: 14, title: "Titre 14", artist: "Votre Artiste", file: "musiques/titre14.mp3", duration: "0:00" }
+        { 
+            id: 1, 
+            title: "Debout encore", 
+            artist: "Hamadine", 
+            file: "Debout encore - Hamadine.mp3", 
+            duration: "0:00",
+            description: "Un hymne à la résilience"
+        },
+        { 
+            id: 2, 
+            title: "Le Chemin d'Hamadine", 
+            artist: "Hamadine", 
+            file: "Le Chemin d'Hamadine.mp3", 
+            duration: "0:00",
+            description: "Le parcours d'un homme"
+        },
+        { 
+            id: 3, 
+            title: "Rien qu'un homme", 
+            artist: "Hamadine", 
+            file: "Rien qu'un homme.mp3", 
+            duration: "0:00",
+            description: "Titre éponyme de l'album"
+        }
     ]
 };
 
@@ -54,6 +65,12 @@ const modalPrevBtn = document.getElementById('modalPrevBtn');
 const modalPlayPauseBtn = document.getElementById('modalPlayPauseBtn');
 const modalNextBtn = document.getElementById('modalNextBtn');
 const albumArt = document.getElementById('albumArt');
+const songCountSpan = document.getElementById('songCount');
+const playlistCountSpan = document.getElementById('playlistCount');
+
+// Mettre à jour le compteur de chansons
+songCountSpan.textContent = `${albumConfig.songs.length} titres`;
+playlistCountSpan.textContent = `${albumConfig.songs.length} titres`;
 
 // Utilitaires
 function formatTime(seconds) {
@@ -70,9 +87,9 @@ function loadLyrics(songId) {
         displayLyrics(currentLyrics, audio.currentTime);
     } else {
         currentLyrics = [];
-        lyricsContent.innerHTML = '<p class="lyrics-placeholder">Paroles non disponibles pour ce titre</p>';
+        lyricsContent.innerHTML = '<p class="lyrics-placeholder">✨ Paroles en cours d\'écriture... ✨<br><small>Bientôt disponibles</small></p>';
         if (modalLyrics) {
-            modalLyrics.innerHTML = '<p class="lyrics-placeholder">Paroles non disponibles</p>';
+            modalLyrics.innerHTML = '<p class="lyrics-placeholder">✨ Paroles à venir ✨</p>';
         }
     }
 }
@@ -80,10 +97,10 @@ function loadLyrics(songId) {
 // Affichage des paroles synchronisées
 function displayLyrics(lyrics, currentTime) {
     if (!lyrics || lyrics.length === 0) {
-        if (lyricsContent.innerHTML.includes('Paroles non disponibles')) return;
-        lyricsContent.innerHTML = '<p class="lyrics-placeholder">Paroles non disponibles pour ce titre</p>';
-        if (modalLyrics && !modalLyrics.innerHTML.includes('Paroles non disponibles')) {
-            modalLyrics.innerHTML = '<p class="lyrics-placeholder">Paroles non disponibles</p>';
+        if (lyricsContent.innerHTML.includes('Paroles en cours')) return;
+        lyricsContent.innerHTML = '<p class="lyrics-placeholder">✨ Paroles en cours d\'écriture... ✨<br><small>Bientôt disponibles</small></p>';
+        if (modalLyrics && !modalLyrics.innerHTML.includes('Paroles à venir')) {
+            modalLyrics.innerHTML = '<p class="lyrics-placeholder">✨ Paroles à venir ✨</p>';
         }
         return;
     }
@@ -110,7 +127,7 @@ function displayLyrics(lyrics, currentTime) {
         let modalHtml = '';
         lyrics.forEach((line, index) => {
             const activeClass = (index === activeIndex) ? 'active' : '';
-            modalHtml += `<div class="lyrics-line-full ${activeClass}" data-time="${line.time}">${line.text}</div>';
+            modalHtml += `<div class="lyrics-line-full ${activeClass}" data-time="${line.time}">${line.text}</div>`;
         });
         modalLyrics.innerHTML = modalHtml;
     }
@@ -151,8 +168,13 @@ function loadSong(index) {
     audio.src = song.file;
     currentSongTitle.textContent = song.title;
     currentSongArtist.textContent = song.artist;
-    modalSongTitle.textContent = `${song.title} - ${albumConfig.name}`;
+    modalSongTitle.textContent = `${song.title} - Hamadine | Rien qu'un homme`;
+    
+    // Gestion de la pochette d'album
     albumArt.src = albumConfig.cover;
+    albumArt.onerror = function() {
+        this.src = 'https://via.placeholder.com/300x300/1a1a2e/a8c0ff?text=Rien+qu\'un+homme';
+    };
     
     // Charger les paroles
     loadLyrics(song.id);
@@ -165,6 +187,11 @@ function loadSong(index) {
             item.classList.remove('active');
         }
     });
+    
+    // Mettre à jour le titre dans le modal
+    if (modal.style.display === 'block') {
+        modalSongTitle.textContent = `${song.title} - Hamadine`;
+    }
     
     if (isPlaying) {
         audio.play();
@@ -247,8 +274,10 @@ function createPlaylist() {
             <div class="playlist-info">
                 <div class="playlist-title">${song.title}</div>
                 <div class="playlist-artist">${song.artist}</div>
+                <div class="playlist-description">${song.description || ''}</div>
             </div>
             <div class="playlist-duration">${song.duration}</div>
+            <div class="playlist-play">▶</div>
         `;
         li.addEventListener('click', () => {
             currentSongIndex = index;
@@ -272,6 +301,14 @@ async function updateDurations() {
                 if (durationSpan) durationSpan.textContent = song.duration;
             }
         });
+        tempAudio.addEventListener('error', () => {
+            song.duration = "00:00";
+            const playlistItem = playlistEl.children[i];
+            if (playlistItem) {
+                const durationSpan = playlistItem.querySelector('.playlist-duration');
+                if (durationSpan) durationSpan.textContent = "??:??";
+            }
+        });
     }
 }
 
@@ -290,6 +327,13 @@ audio.addEventListener('ended', () => {
     } else {
         nextSong();
     }
+});
+
+// Gestion des erreurs audio
+audio.addEventListener('error', (e) => {
+    console.error('Erreur audio:', e);
+    const song = albumConfig.songs[currentSongIndex];
+    lyricsContent.innerHTML = `<p class="lyrics-placeholder">⚠️ Impossible de charger "${song.title}"<br>Vérifiez que le fichier existe bien</p>`;
 });
 
 // Contrôle du volume
@@ -350,11 +394,25 @@ modalNextBtn.addEventListener('click', () => {
     }
 });
 
-// Fermeture du modal avec Echap
+// Raccourcis clavier
 document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && modal.style.display === 'block') {
-        modal.style.display = 'none';
-        document.body.style.overflow = 'auto';
+    switch(e.code) {
+        case 'Space':
+            e.preventDefault();
+            togglePlayPause();
+            break;
+        case 'ArrowLeft':
+            prevSong();
+            break;
+        case 'ArrowRight':
+            nextSong();
+            break;
+        case 'Escape':
+            if (modal.style.display === 'block') {
+                modal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
+            break;
     }
 });
 
@@ -373,6 +431,13 @@ function init() {
     updateDurations();
     audio.volume = 0.7;
     volumeSlider.value = 0.7;
+    
+    // Afficher un message si les fichiers MP3 ne sont pas trouvés
+    setTimeout(() => {
+        if (audio.error) {
+            console.warn("Assurez-vous que les fichiers MP3 sont dans le même dossier que index.html");
+        }
+    }, 1000);
 }
 
 init();
