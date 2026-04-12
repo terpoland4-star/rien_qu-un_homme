@@ -36,6 +36,24 @@ const ALBUM_CONFIG = {
             duration: "3:10",
             durationSeconds: 0,
             description: "Titre éponyme de l'album"
+              },
+        {
+            id: 4,
+            title: "Inaltérable",
+            artist: "Hamadine",
+            file: "musique/Inaltérable – Hamadine.mp3",
+            duration: "3:05",
+            durationSeconds: 185,
+            description: "Un titre puissant sur la force intérieure"
+        },
+        {
+            id: 5,
+            title: "Si elle fuit, ne cours pas",
+            artist: "Hamadine",
+            file: "musique/Si_elle_fuit,ne_cours_pas.mp3",
+            duration: "2:39",
+            durationSeconds: 159,
+            description: "Une réflexion sur l'amour et la liberté"
         }
     ]
 };
