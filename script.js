@@ -14,9 +14,9 @@ const ALBUM_CONFIG = {
             id: 1,
             title: "Debout encore",
             artist: "Hamadine",
-            file: "musique/Debout encore_Hamadine.mp3",  // ✅ Nouveau nom
+            file: "musique/Debout encore_Hamadine.mp3",
             duration: "3:48",
-            durationSeconds: 0,
+            durationSeconds: 228,
             description: "Un hymne à la résilience"
         },
         {
@@ -25,7 +25,7 @@ const ALBUM_CONFIG = {
             artist: "Hamadine",
             file: "musique/Le Chemin d’Hamadine.mp3",
             duration: "3:14",
-            durationSeconds: 0,
+            durationSeconds: 194,
             description: "Le parcours d'un homme"
         },
         {
@@ -34,9 +34,9 @@ const ALBUM_CONFIG = {
             artist: "Hamadine",
             file: "musique/Rien qu’un homme.mp3",
             duration: "3:10",
-            durationSeconds: 0,
+            durationSeconds: 190,
             description: "Titre éponyme de l'album"
-              },
+        },
         {
             id: 4,
             title: "Inaltérable",
@@ -54,6 +54,15 @@ const ALBUM_CONFIG = {
             duration: "2:39",
             durationSeconds: 159,
             description: "Une réflexion sur l'amour et la liberté"
+        },
+        {
+            id: 6,
+            title: "Respire",
+            artist: "Hamadine",
+            file: "musique/Hamadine – Respire.mp3",
+            duration: "3:31",  // La durée se mettra à jour automatiquement
+            durationSeconds: 0,
+            description: "Une invitation à la pause et à l'apaisement"
         }
     ]
 };
