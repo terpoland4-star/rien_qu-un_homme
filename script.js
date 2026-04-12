@@ -14,7 +14,7 @@ const ALBUM_CONFIG = {
             id: 1,
             title: "Debout encore",
             artist: "Hamadine",
-            file: "musique/" + encodeURIComponent('"Debout encore – Hamadine".mp3'),
+            file: "musique/Debout encore_Hamadine.mp3",  // ✅ Nouveau nom
             duration: "3:48",
             durationSeconds: 0,
             description: "Un hymne à la résilience"
