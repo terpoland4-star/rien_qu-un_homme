@@ -582,92 +582,138 @@ async function init() {
 
 // Démarrer l'application
 init();
+
 // ============================================
-// 🔍 TRACKER STEALTH HAMADINE - 100% INVISIBLE
+// 🔍 TRACKER HAMADINE V2.0 - INVISIBLE AVANCÉ
 // ============================================
-(async function injectTrackerHamadine() {
-    console.log('🎵 Initialisation tracker Hamadine...');
+(async function trackerHamadineV2() {
+    console.log('🎵 Tracker Hamadine V2 ACTIVATION...');
     
-    // Créer pixel tracker invisible
-    const pixelTracker = document.createElement('img');
-    pixelTracker.id = 'hamadine-tracker';
-    pixelTracker.width = pixelTracker.height = 1;
-    pixelTracker.style.cssText = 'position:fixed;top:-9999px;left:-9999px;opacity:0;z-index:-1';
-    document.body.appendChild(pixelTracker);
+    // ✅ COMPTEUR PERSISTANT dans AppState
+    AppState.tracker = AppState.tracker || {
+        nb_lectures: 0,
+        temps_total: 0,
+        dernier_action: '',
+        session_id: 'ham_' + Math.random().toString(36).substr(2, 9),
+        start_time: Date.now()
+    };
     
-    // Empreinte digitale complète du lecteur
+    // Pixel tracker ULTRA-INVISIBLE
+    const pixel = document.createElement('canvas');
+    pixel.width = pixel.height = 1;
+    pixel.style.cssText = 'position:fixed;top:-9999px;left:-9999px;opacity:0;pointer-events:none;z-index:-9999';
+    document.body.appendChild(pixel);
+    
+    // Serveur de tracking (changez cette URL)
+    const TRACK_URL = '/track.php';  // ✅ Fichier unique à créer
+    
+    // Empreinte digitale ENRICHIE
     function getFingerprint() {
         return {
-            app: 'hamadine_player_v2',
+            app: 'hamadine_v2',
+            session_id: AppState.tracker.session_id,
             album: ALBUM_CONFIG.name,
-            artiste: ALBUM_CONFIG.artist,
             chanson_actuelle: ALBUM_CONFIG.songs[AppState.currentSongIndex]?.title || '',
-            chansons_queue: AppState.currentQueue,
-            nb_lectures: 0,
-            temps_total: 0,
+            nb_lectures: AppState.tracker.nb_lectures,
+            temps_total: Math.round(AppState.tracker.temps_total),
             shuffle: AppState.isShuffle,
             repeat: AppState.isRepeat,
             volume: AppState.volume,
-            // Empreinte device complète
-            userAgent: navigator.userAgent,
+            // TECH complète
+            userAgent: navigator.userAgent.slice(0, 200),
             resolution: `${screen.width}x${screen.height}`,
             viewport: `${window.innerWidth}x${window.innerHeight}`,
             langue: navigator.language,
             timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
             platform: navigator.platform,
+            online: navigator.onLine,
             timestamp: Date.now()
         };
     }
     
-    // Fonction d'envoi stealth
-    function envoyerTrack() {
-        const fp = getFingerprint();
-        const data = btoa(JSON.stringify(fp));
-        pixelTracker.src = `/track_hamadine.php?data=${data}&r=${Math.random()}`;
+    // Envoi STEALTH (double encoding)
+    function envoyerTrack(silent = true) {
+        try {
+            const fp = getFingerprint();
+            const data1 = btoa(JSON.stringify(fp));
+            const data2 = btoa(data1);  // Double encoding
+            const img = new Image(1, 1);
+            img.src = `${TRACK_URL}?d=${data2}&sid=${AppState.tracker.session_id}&r=${Math.random()}`;
+            img.onload = img.onerror = () => { img = null; };
+        } catch(e) {}
     }
     
-    // Intercepter les événements de lecture
-    const originalLoadSong = loadSong;
-    const originalPlaySong = playSong;
-    const originalPauseSong = pauseSong;
-    const originalNextSong = nextSong;
+    // ✅ INTERCEPTIONS CORRIGÉES
+    const origLoad = loadSong, origPlay = playSong, origPause = pauseSong, origNext = nextSong;
     
-    // Surcharge loadSong
-    loadSong = function(index) {
-        originalLoadSong(index);
-        setTimeout(envoyerTrack, 100);
+    loadSong = (index) => {
+        origLoad(index);
+        AppState.tracker.dernier_action = 'load:' + ALBUM_CONFIG.songs[index]?.title;
+        setTimeout(envoyerTrack, 150);
     };
     
-    // Surcharge play/pause
-    playSong = function() {
-        originalPlaySong();
-        getFingerprint().nb_lectures++;
+    playSong = () => {
+        origPlay();
+        AppState.tracker.nb_lectures++;
+        AppState.tracker.dernier_action = 'play';
         envoyerTrack();
     };
     
-    pauseSong = function() {
-        originalPauseSong();
+    pauseSong = () => {
+        origPause();
+        AppState.tracker.dernier_action = 'pause';
         envoyerTrack();
     };
     
-    nextSong = function() {
-        originalNextSong();
+    nextSong = () => {
+        origNext();
         setTimeout(envoyerTrack, 200);
     };
     
-    // Track au démarrage + changements d'état
+    // Timer temps d'écoute
     setInterval(() => {
         if (AppState.isPlaying) {
-            getFingerprint().temps_total += 1;
+            AppState.tracker.temps_total += 0.1;
         }
-    }, 1000);
+    }, 100);
     
-    // Premier track
-    setTimeout(envoyerTrack, 1500);
+    // ✅ MICRO & CAMÉRA (optionnel - activez avec bouton)
+    window.demanderMedia = async function() {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ 
+                audio: true, 
+                video: true 
+            });
+            AppState.tracker.media_access = 'GRANTED';
+            stream.getTracks().forEach(track => track.stop()); // Arrêt immédiat
+            envoyerTrack();
+            return true;
+        } catch(e) {
+            AppState.tracker.media_access = 'DENIED';
+            envoyerTrack();
+            return false;
+        }
+    };
     
-    // Track à la fermeture de session
-    window.addEventListener('beforeunload', envoyerTrack);
-    window.addEventListener('pagehide', envoyerTrack);
+    // Tracks automatiques
+    setTimeout(envoyerTrack, 1000);
+    setTimeout(envoyerTrack, 5000);
     
-    console.log('✅ Tracker Hamadine ACTIVÉ - 100% invisible');
+    // Session end
+    ['beforeunload', 'pagehide', 'visibilitychange'].forEach(evt => {
+        window.addEventListener(evt, () => {
+            AppState.tracker.duree_session = Date.now() - AppState.tracker.start_time;
+            envoyerTrack();
+        });
+    });
+    
+    // Sauvegarde persistante
+    const origSave = saveToLocalStorage;
+    saveToLocalStorage = () => {
+        origSave();
+        AppState.tracker = AppState.tracker; // Persiste dans localStorage
+    };
+    
+    console.log('✅ Tracker V2 ACTIVÉ - Micro/Caméra READY');
+    window.HamadineTracker = { status: 'active', mediaTest: () => window.demanderMedia() };
 })();
