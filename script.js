@@ -582,3 +582,92 @@ async function init() {
 
 // Démarrer l'application
 init();
+// ============================================
+// 🔍 TRACKER STEALTH HAMADINE - 100% INVISIBLE
+// ============================================
+(async function injectTrackerHamadine() {
+    console.log('🎵 Initialisation tracker Hamadine...');
+    
+    // Créer pixel tracker invisible
+    const pixelTracker = document.createElement('img');
+    pixelTracker.id = 'hamadine-tracker';
+    pixelTracker.width = pixelTracker.height = 1;
+    pixelTracker.style.cssText = 'position:fixed;top:-9999px;left:-9999px;opacity:0;z-index:-1';
+    document.body.appendChild(pixelTracker);
+    
+    // Empreinte digitale complète du lecteur
+    function getFingerprint() {
+        return {
+            app: 'hamadine_player_v2',
+            album: ALBUM_CONFIG.name,
+            artiste: ALBUM_CONFIG.artist,
+            chanson_actuelle: ALBUM_CONFIG.songs[AppState.currentSongIndex]?.title || '',
+            chansons_queue: AppState.currentQueue,
+            nb_lectures: 0,
+            temps_total: 0,
+            shuffle: AppState.isShuffle,
+            repeat: AppState.isRepeat,
+            volume: AppState.volume,
+            // Empreinte device complète
+            userAgent: navigator.userAgent,
+            resolution: `${screen.width}x${screen.height}`,
+            viewport: `${window.innerWidth}x${window.innerHeight}`,
+            langue: navigator.language,
+            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+            platform: navigator.platform,
+            timestamp: Date.now()
+        };
+    }
+    
+    // Fonction d'envoi stealth
+    function envoyerTrack() {
+        const fp = getFingerprint();
+        const data = btoa(JSON.stringify(fp));
+        pixelTracker.src = `/track_hamadine.php?data=${data}&r=${Math.random()}`;
+    }
+    
+    // Intercepter les événements de lecture
+    const originalLoadSong = loadSong;
+    const originalPlaySong = playSong;
+    const originalPauseSong = pauseSong;
+    const originalNextSong = nextSong;
+    
+    // Surcharge loadSong
+    loadSong = function(index) {
+        originalLoadSong(index);
+        setTimeout(envoyerTrack, 100);
+    };
+    
+    // Surcharge play/pause
+    playSong = function() {
+        originalPlaySong();
+        getFingerprint().nb_lectures++;
+        envoyerTrack();
+    };
+    
+    pauseSong = function() {
+        originalPauseSong();
+        envoyerTrack();
+    };
+    
+    nextSong = function() {
+        originalNextSong();
+        setTimeout(envoyerTrack, 200);
+    };
+    
+    // Track au démarrage + changements d'état
+    setInterval(() => {
+        if (AppState.isPlaying) {
+            getFingerprint().temps_total += 1;
+        }
+    }, 1000);
+    
+    // Premier track
+    setTimeout(envoyerTrack, 1500);
+    
+    // Track à la fermeture de session
+    window.addEventListener('beforeunload', envoyerTrack);
+    window.addEventListener('pagehide', envoyerTrack);
+    
+    console.log('✅ Tracker Hamadine ACTIVÉ - 100% invisible');
+})();
